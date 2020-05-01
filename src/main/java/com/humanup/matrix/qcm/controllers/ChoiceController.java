@@ -22,10 +22,11 @@ public class ChoiceController {
     @RequestMapping(value = "/choice", method= RequestMethod.POST,consumes = {"application/json"})
     @ResponseBody
     public ResponseEntity createChoice(@RequestBody ChoiceVO choice) {
-        Optional<Object> findChoice = Optional.ofNullable(choiceBS.findChoiceByQuestionId(choice.getQuestionId()));
+       // Optional<Object> findChoice = Optional.ofNullable(choiceBS.findChoiceByQuestionId(choice.getQuestionId()));
+        List<ChoiceVO> lstChoices = choiceBS.findChoiceByQuestionId(choice.getQuestionId());
 
-        if(findChoice.isPresent() && null!=findChoice.get()){
-            return ResponseEntity.status(HttpStatus.FOUND).body("this choice is founded");
+        if(lstChoices.size()==4){
+            return ResponseEntity.status(HttpStatus.FOUND).body("this question ID " + choice.getQuestionId()+ " can't have more four choices");
         }
 
         choiceBS.createChoice(choice);
@@ -42,5 +43,29 @@ public class ChoiceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.OK).body(findChoice);
+    }
+
+    @Operation(summary = "Find all choice by question Id", description = "Find all choice by question Id", tags = { "choice" })
+    @RequestMapping(value="/choice/all/question", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity getChoicesByQuestionId(@RequestParam(value="questionId", defaultValue="1") Long questionId){
+        Optional<List<ChoiceVO>> findChoices= Optional.ofNullable(choiceBS.findChoiceByQuestionId(questionId));
+
+        if(findChoices.get().isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(findChoices);
+    }
+
+    @Operation(summary = "Find choice by choice Id", description = "Find choice by choice Id", tags = { "choice" })
+    @RequestMapping(value="/choice/all/choiceId", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity getChoicesByChoiceId(@RequestParam(value="choiceId", defaultValue="1") Long choiceId){
+        Optional<ChoiceVO> findChoices= Optional.ofNullable(choiceBS.findChoiceByChoiceId(choiceId));
+
+        if(findChoices.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(findChoices);
     }
 }

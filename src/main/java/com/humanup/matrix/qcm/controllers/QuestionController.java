@@ -24,7 +24,7 @@ public class QuestionController {
     @RequestMapping(value = "/question", method= RequestMethod.POST,consumes = {"application/json"})
     @ResponseBody
     public ResponseEntity createQuestion(@RequestBody QuestionVO question){
-        Optional<Object> findQuestion = Optional.ofNullable(questionBS.findListQuestion());
+        Optional<Object> findQuestion = Optional.ofNullable(questionBS.findQuestionByQuestionText(question.getQuestionText()));
 
         if(findQuestion.isPresent()){
             return ResponseEntity.status(HttpStatus.FOUND).body("this question is founded");
@@ -44,5 +44,17 @@ public class QuestionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.OK).body(findQuestion);
+    }
+
+    @Operation(summary = "Find questions by Id", description = "Find all questions by Id", tags = { "question" })
+    @RequestMapping(value="/question", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity findQuestionByQuestionId(@RequestParam(value="questionId", defaultValue="1") Long questionId){
+        Optional<QuestionVO> findQuestion = Optional.ofNullable(questionBS.findQuestionById(questionId));
+
+        if(findQuestion.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(findQuestion.get());
     }
 }
