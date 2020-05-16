@@ -1,6 +1,6 @@
 Feature: Choice End Point
   Background:
-    * url 'http://localhost:8090'
+    * url 'http://localhost:8020'
     * header Accept = 'application/json'
 
   Scenario: Testing valid GET endpoint
@@ -13,7 +13,7 @@ Feature: Choice End Point
   Scenario: Add new Choice OK response
     def
     Given  path 'choice'
-    And request { choiceText: 'choice 5' ,percentage: 0 ,questionId: 3  }
+    And request { choiceText: 'choice 5' ,percentage: 100 ,questionId: 10  }
     When method POST
     Then status 201
     And def person = response
